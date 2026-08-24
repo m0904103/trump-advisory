@@ -34,7 +34,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add src/App.jsx
           git diff-index --quiet HEAD || git commit -m "auto: update VIX data [skip ci]"
-          git push origin main || true
+          git push origin master || true
 
       - name: Build Webpack/Vite Bundle
         run: npm run build
