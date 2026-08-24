@@ -17,6 +17,33 @@
   }
 }
 
+.pulse-green {
+  animation: pulse-green 2s infinite;
+}
+
+/* Keyword Highlights */
+.highlight-word {
+  font-weight: 700;
+  padding: 0 2px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.glow-red-text {
+  color: #ff3366;
+  text-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+}
+
+.glow-green-text {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+}
+
+.glow-blue-text {
+  color: #00d2ff;
+  text-shadow: 0 0 10px rgba(0, 210, 255, 0.8);
+}
+
 .hero {
   position: relative;
 

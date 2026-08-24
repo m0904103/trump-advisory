@@ -1,0 +1,46 @@
+name: Auto Update VIX & Deploy
+
+on:
+  schedule:
+    # 00:00 UTC = 08:00 CST (Taiwan Morning)
+    - cron: '0 0 * * 1-5'
+    # 05:40 UTC = 13:40 CST (Taiwan Market Close)
+    - cron: '40 5 * * 1-5'
+    # 13:40 UTC = 21:40 CST (US Market Open)
+    - cron: '40 13 * * 1-5'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Fetch Latest VIX & Update App.jsx
+        run: node scripts/update-vix.js
+
+      - name: Commit Updated App.jsx back to repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/App.jsx
+          git diff-index --quiet HEAD || git commit -m "auto: update VIX data [skip ci]"
+          git push origin main || true
+
+      - name: Build Webpack/Vite Bundle
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

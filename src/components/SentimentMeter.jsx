@@ -1,13 +1,16 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
-const data = [
-  { name: '看空 (Bearish)', value: 78, color: '#00ff88' },
-  { name: '中立 (Neutral)', value: 15, color: '#ffb800' },
-  { name: '看多 (Bullish)', value: 7, color: '#ff3366' },
-];
+export default function SentimentMeter({ stats }) {
+  const data = [
+    { name: stats?.marketMode === 'TW' ? '看空 (Bearish)' : '看跌 (Bearish)', value: stats?.bearishPercent || 78 },
+    { name: '盤整 (Neutral)', value: stats?.neutralPercent || 15 },
+    { name: stats?.marketMode === 'TW' ? '看多 (Bullish)' : '看漲 (Bullish)', value: stats?.bullishPercent || 7 },
+  ];
 
-export default function SentimentMeter() {
+  // 統一使用台灣習慣：跌(看空)為綠色，漲(看多)為紅色，以避免視覺混淆
+  const COLORS = ['#00ff88', '#94a3b8', '#ff3366'];
+
   return (
     <div className="glass-panel" style={{ gridColumn: 'span 4', minHeight: '320px' }}>
       <h2 className="text-xl">市場情緒 (Market Sentiment)</h2>
@@ -25,7 +28,7 @@ export default function SentimentMeter() {
               stroke="none"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} style={{ filter: `drop-shadow(0 0 8px ${entry.color}80)` }} />
+                <Cell key={`cell-${index}`} fill={COLORS[index]} style={{ filter: `drop-shadow(0 0 8px ${COLORS[index]}80)` }} />
               ))}
             </Pie>
             <Tooltip 
@@ -36,9 +39,9 @@ export default function SentimentMeter() {
         </ResponsiveContainer>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '-10px' }}>
-        {data.map(item => (
+        {data.map((item, index) => (
           <div key={item.name} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: item.color, boxShadow: `0 0 10px ${item.color}` }}></div>
+            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: COLORS[index], boxShadow: `0 0 10px ${COLORS[index]}` }}></div>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{item.name}</span>
           </div>
         ))}
