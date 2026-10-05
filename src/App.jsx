@@ -44,20 +44,20 @@ function App() {
   const [apiStatus, setApiStatus] = useState('等待連線...');
   
   // Use localStorage to persist user's custom VIX settings across page reloads
-  // Force update version: 'vAuto_20261002_1839'
+  // Force update version: 'vAuto_20261005_0311'
   const [twVix, setTwVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'vAuto_20261002_1839') return '15.00';
+    if (localStorage.getItem('vixVersion') !== 'vAuto_20261005_0311') return '15.00';
     return localStorage.getItem('twVix') || '21.50';
   });
   const [usVix, setUsVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'vAuto_20261002_1839') return '15.63';
+    if (localStorage.getItem('vixVersion') !== 'vAuto_20261005_0311') return '15.31';
     return localStorage.getItem('usVix') || '14.53';
   });
 
   useEffect(() => { 
     localStorage.setItem('twVix', twVix); 
     localStorage.setItem('usVix', usVix);
-    localStorage.setItem('vixVersion', 'vAuto_20261002_1839');
+    localStorage.setItem('vixVersion', 'vAuto_20261005_0311');
   }, [twVix, usVix]);
 
 
