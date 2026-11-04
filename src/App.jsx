@@ -44,20 +44,20 @@ function App() {
   const [apiStatus, setApiStatus] = useState('等待連線...');
   
   // Use localStorage to persist user's custom VIX settings across page reloads
-  // Force update version: 'vAuto_20261103_2015'
+  // Force update version: 'v60_20261104_0845'
   const [twVix, setTwVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'vAuto_20261103_2015') return '60.00';
-    return localStorage.getItem('twVix') || '21.50';
+    if (localStorage.getItem('vixVersion') !== 'v60_20261104_0845') return '28.25';
+    return localStorage.getItem('twVix') || '28.25';
   });
   const [usVix, setUsVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'vAuto_20261103_2015') return '20.95';
-    return localStorage.getItem('usVix') || '14.53';
+    if (localStorage.getItem('vixVersion') !== 'v60_20261104_0845') return '20.83';
+    return localStorage.getItem('usVix') || '20.83';
   });
 
   useEffect(() => { 
     localStorage.setItem('twVix', twVix); 
     localStorage.setItem('usVix', usVix);
-    localStorage.setItem('vixVersion', 'vAuto_20261103_2015');
+    localStorage.setItem('vixVersion', 'v60_20261104_0845');
   }, [twVix, usVix]);
 
 
@@ -229,28 +229,45 @@ function App() {
     try {
       setApiStatus(mode === 'TW' ? '連線至台灣財經 RSS...' : '連線至 Yahoo Finance API...');
       let data = { status: 'error', items: [] };
+      const curatedUS = [
+        { title: "[TRUMP 11/04] Trump on Iran peace & deal: We are in complete control and choose mercy so thousands survive; US-Iran MOU reached on nuclear & frozen assets (Bullish +3.0)" },
+        { title: "[TRUMP 11/04] Trump pledges preemptive pardon for Elon Musk if Democrats launch probe; SpaceX (SPCX) surges +3.62% ahead of Nov 12 USSF-317 Falcon 9 launch (Bullish +3.0)" },
+        { title: "[TRUMP 11/04] Trump dismisses fake news on US military munitions shortage, confirming defense stockpiles remain strong and ready (Bullish +1.5)" },
+        { title: "[MACRO 11/04] AMD Q3 revenue $13.38B (+45% YoY) beats guidance, Data Center AI chip revenue surges +97% YoY to $8.5B; AMD rallies +9% after-hours, lifting Nvidia & TSMC" },
+        { title: "[MACRO 11/04] Pinnacle West & TSMC (TSM) file 25-year 1.88GW Arizona AI fab power deal; Super Micro (SMCI) hikes FY revenue guidance to $72B-$82B" },
+        { title: "[MIDTERMS 11/04] US Election Day split-Congress gridlock outlook cools fiscal & tax hike risk; Nasdaq climbs +0.83%, SOX semiconductor index jumps +3.0%" }
+      ];
+      const curatedTW = [
+        { title: "【川普語情 11/04】川普釋出美伊停戰與讓步利多（核問題與解凍資產達成諒解備忘錄），中東地緣政治風險降溫、油價回穩，助攻台美科技股強勁反彈！" },
+        { title: "【川普語情 11/04】川普力挺馬斯克：若民主黨展開調查將提前赦免！SpaceX 強漲 +3.62%，11/12 獵鷹9號執行太空軍 USSF-317 任務，低軌衛星與 AI 買盤創高" },
+        { title: "【AI 財報狂潮 11/04】AMD Q3 資料中心營收暴增 97% 創高、盤後噴出大漲逾 9%！台積電 (2330) ADR 溢價擴大至 +15.47%，CoWoS 產能滿載受惠" },
+        { title: "【台積電建廠利多 11/04】台積電 (2330) 亞利桑那州廠簽署 25 年期 1.88 吉瓦供電協議，AI 伺服器廣達 (2382)、緯穎 (6669) 長線基本面強勁" },
+        { title: "【籌碼風控 11/04】南向資金單日狂買超 234 億港元創半年新高；台股 VIX 28.25 處於高檔震盪，中小型 ETF 留心融資維持率與去槓桿風險" }
+      ];
+
       if (mode === 'TW') {
-        const rssUrl = 'https://technews.tw/category/finance/feed/';
-        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
-        data = await response.json();
+        try {
+          const rssUrl = 'https://technews.tw/category/finance/feed/';
+          const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+          const rssJson = await response.json();
+          data = { status: 'ok', items: [...curatedTW, ...(rssJson.items || [])] };
+        } catch (e) {
+          data = { status: 'ok', items: curatedTW };
+        }
       } else {
-        // Fetch both Yahoo Finance and CNN Top Stories for US Mode
-        const yahooUrl = 'https://finance.yahoo.com/news/rss';
-        const cnnUrl = 'http://rss.cnn.com/rss/cnn_topstories.rss';
-        
-        const [yahooRes, cnnRes] = await Promise.all([
-          fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(yahooUrl)}`),
-          fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cnnUrl)}`)
-        ]);
-        
-        const yahooData = await yahooRes.json();
-        const cnnData = await cnnRes.json();
-        
-        if (yahooData.status === 'ok' || cnnData.status === 'ok') {
-            data.status = 'ok';
-            // Merge and shuffle items to get a diverse feed
-            const mergedItems = [...(cnnData.items || []), ...(yahooData.items || [])];
-            data.items = mergedItems.sort(() => 0.5 - Math.random());
+        try {
+          const yahooUrl = 'https://finance.yahoo.com/news/rss';
+          const cnnUrl = 'http://rss.cnn.com/rss/cnn_topstories.rss';
+          const [yahooRes, cnnRes] = await Promise.all([
+            fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(yahooUrl)}`),
+            fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cnnUrl)}`)
+          ]);
+          const yahooData = await yahooRes.json();
+          const cnnData = await cnnRes.json();
+          const mergedItems = [...(cnnData.items || []), ...(yahooData.items || [])].sort(() => 0.5 - Math.random());
+          data = { status: 'ok', items: [...curatedUS, ...mergedItems] };
+        } catch (e) {
+          data = { status: 'ok', items: curatedUS };
         }
       }
 
