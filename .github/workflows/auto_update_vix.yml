@@ -1,6 +1,8 @@
 name: Auto Update VIX & Deploy
 
 on:
+  push:
+    branches: [ master ]
   schedule:
     # 00:00 UTC = 08:00 CST (Taiwan Morning)
     - cron: '0 0 * * 1-5'

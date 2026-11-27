@@ -5,6 +5,7 @@ import SentimentMeter from './components/SentimentMeter';
 import LiveFeed from './components/LiveFeed';
 import SectorImpact from './components/SectorImpact';
 import BacktestTracker from './components/BacktestTracker';
+import NouTrumpMacroPanel from './components/NouTrumpMacroPanel';
 import { Activity } from 'lucide-react';
 
 // Upgraded NLP Dictionary with Weights
@@ -44,20 +45,20 @@ function App() {
   const [apiStatus, setApiStatus] = useState('等待連線...');
   
   // Use localStorage to persist user's custom VIX settings across page reloads
-  // Force update version: 'v60_20261104_0845'
+  // Force update version: 'v61_20261127_1840'
   const [twVix, setTwVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'v60_20261104_0845') return '28.25';
-    return localStorage.getItem('twVix') || '28.25';
+    if (localStorage.getItem('vixVersion') !== 'v61_20261127_1840') return '26.80';
+    return localStorage.getItem('twVix') || '26.80';
   });
   const [usVix, setUsVix] = useState(() => {
-    if (localStorage.getItem('vixVersion') !== 'v60_20261104_0845') return '20.83';
-    return localStorage.getItem('usVix') || '20.83';
+    if (localStorage.getItem('vixVersion') !== 'v61_20261127_1840') return '24.64';
+    return localStorage.getItem('usVix') || '24.64';
   });
 
   useEffect(() => { 
     localStorage.setItem('twVix', twVix); 
     localStorage.setItem('usVix', usVix);
-    localStorage.setItem('vixVersion', 'v60_20261104_0845');
+    localStorage.setItem('vixVersion', 'v61_20261127_1840');
   }, [twVix, usVix]);
 
 
@@ -230,19 +231,18 @@ function App() {
       setApiStatus(mode === 'TW' ? '連線至台灣財經 RSS...' : '連線至 Yahoo Finance API...');
       let data = { status: 'error', items: [] };
       const curatedUS = [
-        { title: "[TRUMP 11/04] Trump on Iran peace & deal: We are in complete control and choose mercy so thousands survive; US-Iran MOU reached on nuclear & frozen assets (Bullish +3.0)" },
-        { title: "[TRUMP 11/04] Trump pledges preemptive pardon for Elon Musk if Democrats launch probe; SpaceX (SPCX) surges +3.62% ahead of Nov 12 USSF-317 Falcon 9 launch (Bullish +3.0)" },
-        { title: "[TRUMP 11/04] Trump dismisses fake news on US military munitions shortage, confirming defense stockpiles remain strong and ready (Bullish +1.5)" },
-        { title: "[MACRO 11/04] AMD Q3 revenue $13.38B (+45% YoY) beats guidance, Data Center AI chip revenue surges +97% YoY to $8.5B; AMD rallies +9% after-hours, lifting Nvidia & TSMC" },
-        { title: "[MACRO 11/04] Pinnacle West & TSMC (TSM) file 25-year 1.88GW Arizona AI fab power deal; Super Micro (SMCI) hikes FY revenue guidance to $72B-$82B" },
-        { title: "[MIDTERMS 11/04] US Election Day split-Congress gridlock outlook cools fiscal & tax hike risk; Nasdaq climbs +0.83%, SOX semiconductor index jumps +3.0%" }
+        { title: "[GEO 11/27] Iran Navy Commander declares Strait of Hormuz remains closed; WTI crude surges to $86.03 (+2.81%) and Gold rallies to $3,707 (+4.84%)" },
+        { title: "[TARIFF 11/27] US-Vietnam tariff talks advance: Washington threatens up to 35% new tariffs on Vietnam exports (20% if deal reached), pressuring hardware transshipment chains" },
+        { title: "[FED 11/27] BlueBay warns Fed to hike 25bps in December and again in Q1 2027; ECB signals 3rd rate hike on Dec 17 as US 10Y Treasury yield hits 4.85%" },
+        { title: "[AI 11/27] Black Friday half-day pre-market bounce: Nasdaq futures jump as dip-buyers bid NVDA, MU, SNDK, CoreWeave; SpaceX wins approval for 1M space data-center satellites" },
+        { title: "[RISK 11/27] South Korea NPS pension fund loses $151B in Q3 as KOSPI plunges 46% from highs; OPEC+ poised to hold Q1 2027 oil output targets steady" }
       ];
       const curatedTW = [
-        { title: "【川普語情 11/04】川普釋出美伊停戰與讓步利多（核問題與解凍資產達成諒解備忘錄），中東地緣政治風險降溫、油價回穩，助攻台美科技股強勁反彈！" },
-        { title: "【川普語情 11/04】川普力挺馬斯克：若民主黨展開調查將提前赦免！SpaceX 強漲 +3.62%，11/12 獵鷹9號執行太空軍 USSF-317 任務，低軌衛星與 AI 買盤創高" },
-        { title: "【AI 財報狂潮 11/04】AMD Q3 資料中心營收暴增 97% 創高、盤後噴出大漲逾 9%！台積電 (2330) ADR 溢價擴大至 +15.47%，CoWoS 產能滿載受惠" },
-        { title: "【台積電建廠利多 11/04】台積電 (2330) 亞利桑那州廠簽署 25 年期 1.88 吉瓦供電協議，AI 伺服器廣達 (2382)、緯穎 (6669) 長線基本面強勁" },
-        { title: "【籌碼風控 11/04】南向資金單日狂買超 234 億港元創半年新高；台股 VIX 28.25 處於高檔震盪，中小型 ETF 留心融資維持率與去槓桿風險" }
+        { title: "【地緣紅燈 11/27】伊朗海軍司令宣告霍爾木茲海峽保持封鎖！WTI 原油飆至 86 美元、黃金單日暴漲 +4.84%，能源與停滯性通膨警報再響" },
+        { title: "【川普關稅 11/27】美越關稅談判膠著（潛在 35% 關稅，達成協議降至 20%），台廠越南轉口供應鏈（3017 奇鋐等）面臨關稅敏感風險" },
+        { title: "【全球升息潮 11/27】美債 10Y 殖利率衝 4.85%（費雪實質利率 2.25%），BlueBay 預告聯準會 12 月升息 1 碼、歐洲央行 12/17 預告年內第三次升息！" },
+        { title: "【籌碼防護罩 11/27】台股連兩紅收 39,308（Day-2 過關），但外資台指期未平倉仍壓 -106,275 口史詩級空單，全市場僅 14.2% 個股站穩季線！" },
+        { title: "【血淋淋風控 11/27】韓國國民年金 Q3 慘虧 1,510 億美元（KOSPI 崩 46%），印證 Gen 31 嚴守高現金底線（≥55%~70%）與半凱利單檔上限（9.9%）的重要性！" }
       ];
 
       if (mode === 'TW') {
@@ -421,6 +421,7 @@ function App() {
       </header>
       
       <main className="dashboard-grid">
+        <NouTrumpMacroPanel />
         <RiskIndicator stats={{ ...globalStats, twVix, usVix, marketMode }} />
         <SentimentMeter stats={{ ...globalStats, marketMode }} />
         <LiveFeed incomingNews={newsFeeds} apiStatus={apiStatus} marketMode={marketMode} />
